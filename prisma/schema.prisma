@@ -1,0 +1,32 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+
+datasource db {
+  provider     = "mysql"
+  url          = env("MYSQL_URL")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator pothos {
+  provider = "prisma-pothos-types"
+}
+
+
+model User {
+  id         Int      @id() @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted    Boolean  @default(false)
+
+  email             String    @unique
+  // Profile
+  username          String?
+  profile_image_url String?
+
+  @@map("users")
+}
