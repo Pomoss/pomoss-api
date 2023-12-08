@@ -38,8 +38,8 @@ jobs:
       ###################
       - name: Checkout
         uses: actions/checkout@v4
-      # - name: Generate .env.yaml file from Github Secrets
-      #   run: echo "${{ secrets.APP_ENV_YAML }}" > .env.yaml
+      - name: Generate .env.yaml file from Github Secrets
+        run: echo "${{ secrets.APP_ENV_YAML }}" > .env.yaml
 
       - id: 'auth'
         uses: 'google-github-actions/auth@v2'
@@ -51,4 +51,4 @@ jobs:
         with:
           name: 'pomodoro-api'
           runtime: 'nodejs18'
-          # env_vars_file: .env.yaml
+          env_vars_file: .env.yaml
