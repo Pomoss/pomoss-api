@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@master
       - uses: actions/setup-node@v4
         with:
           node-version: "18.6.0"
@@ -27,6 +27,10 @@ jobs:
         run: yarn build
       # - name: ESLint
       #   run: yarn lint
+      - uses: actions/upload-artifact@master
+        with:
+          name: pomodoro-api
+          path: dist
 
   cd:
     needs: ci
@@ -41,7 +45,12 @@ jobs:
       # CloudRun #
       ############
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@master
+      - name: Download generated file from ci job
+        uses: actions/download-artifact@master
+        with:
+          name: pomodoro-api
+          path: dist
       - name: Generate .env file from Github Secrets
         run: echo "${{ secrets.APP_ENV_FILE }}" > .env
 
