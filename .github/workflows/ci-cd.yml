@@ -15,8 +15,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "18.6.0"
-      - name: Generate .env file from Github Secrets
-        run: echo "${{ secrets.APP_ENV_FILE }}" > .env
       - name: Install NPM dependencies
         run: yarn
       - name: Build
@@ -38,17 +36,16 @@ jobs:
       ###################
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Generate .env.yaml file from Github Secrets
-        run: echo "${{ secrets.APP_ENV_YAML }}" > .env.yaml
-
+      - name: Generate .env.yml file from Github Secrets
+        run: echo "${{ secrets.APP_ENV_YAML }}" > .env.yml
       - id: 'auth'
         uses: 'google-github-actions/auth@v2'
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS_JSON }}'
-
-      - id: 'deploy'
-        uses: 'google-github-actions/deploy-cloud-functions@v1'
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
         with:
-          name: 'pomodoro-api'
-          runtime: 'nodejs18'
-          env_vars_file: .env.yaml
+          version: '>= 416.0.0'
+
+      - name: 'deploy'
+        run: gcloud functions deploy pomodoro-api --entry-point pomodoroBack --runtime nodejs18 --region=asia-northeast1 --env-vars-file=.env.yml --trigger-http
