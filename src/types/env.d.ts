@@ -18,6 +18,8 @@ declare module 'process' {
                 readonly FRONTEND_LOGIN_URL: string;
                 readonly FRONTEND_FAILED_LOGIN_URL: string;
 
+                
+
                 // JWT
                 readonly JWT_SECRET: string;
             }

@@ -76,5 +76,4 @@ app
     yoga
   )
 
-const pomodoroBack = app
-export {pomodoroBack}
+app.listen(process.env.PORT,() => console.log(`Server is started at port: ${process.env.PORT}`))

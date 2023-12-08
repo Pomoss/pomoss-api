@@ -1,5 +1,3 @@
-process.env
-
 const authConfig = {
     "defaults": {
         "origin": "http://localhost:4000",
