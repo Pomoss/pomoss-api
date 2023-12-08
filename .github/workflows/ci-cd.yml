@@ -15,6 +15,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "18.6.0"
+      - name: Generate .env file from Github Secrets
+        run: echo "${{ secrets.APP_ENV_FILE }}" > .env
       - name: Install NPM dependencies
         run: yarn
       - name: Build
@@ -36,8 +38,8 @@ jobs:
       ###################
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Generate .env.yaml file from Github Secrets
-        run: echo "${{ secrets.APP_ENV_YAML }}" > .env.yaml
+      # - name: Generate .env.yaml file from Github Secrets
+      #   run: echo "${{ secrets.APP_ENV_YAML }}" > .env.yaml
 
       - id: 'auth'
         uses: 'google-github-actions/auth@v2'
@@ -49,4 +51,4 @@ jobs:
         with:
           name: 'pomodoro-api'
           runtime: 'nodejs18'
-          env_vars_file: .env.yaml
+          # env_vars_file: .env.yaml
