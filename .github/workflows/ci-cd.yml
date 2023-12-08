@@ -57,9 +57,10 @@ jobs:
         run: gcloud auth configure-docker
       - name: Build and Push Container
         run: |-
-          docker build -t ${{ env.GCP_CLOUD_RUN_IMAGE }}
+          docker build -t ${{ env.GCP_CLOUD_RUN_IMAGE }} .
           docker push ${{ env.GCP_CLOUD_RUN_IMAGE }}
-      - name: 'Deploy to CloudRun'|-
+      - name: 'Deploy to CloudRun'
+        run: |-
           gcloud run deploy ${{ env.GCP_CLOUD_RUN_SERVICE_NAME }} \
             --image ${{ env.GCP_CLOUD_RUN_IMAGE }} \
             --region ${{ env.GCP_REGION }} \
