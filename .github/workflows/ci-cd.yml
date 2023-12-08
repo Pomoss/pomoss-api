@@ -23,6 +23,7 @@ jobs:
       #   run: yarn lint
 
   cd:
+    needs: ci
     runs-on: ubuntu-latest
     # Add "id-token" with the intended permissions.
     permissions:
