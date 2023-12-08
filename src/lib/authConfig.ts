@@ -1,4 +1,4 @@
-import env from "./env";
+process.env
 
 const authConfig = {
     "defaults": {
@@ -7,8 +7,8 @@ const authConfig = {
         "transport": "session",
     },
     "google": {
-        "key": env.GCP_OAUTH_CLIENT_ID,
-        "secret": env.GCP_OAUTH_CLIENT_SECRET,
+        "key": process.env.GCP_OAUTH_CLIENT_ID,
+        "secret": process.env.GCP_OAUTH_CLIENT_SECRET,
         "scope": ["email", "profile"],
         "response": ["tokens", "profile"]
     }
