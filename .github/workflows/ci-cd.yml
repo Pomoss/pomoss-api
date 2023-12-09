@@ -52,11 +52,7 @@ jobs:
         shell: bash
         env:
           ENV_FILE: ${{ secrets.ENV_FILE }}
-        run: 'echo "$ENV_FILE" > .env'
-      - name: Cat .env
-        run: cat .env
-      - name: Cat index.cjs
-        run: cat dist/index.cjs
+        run: 'echo "$ENV_FILE" > .env' # Do not relive the quotes
       - id: Auth
         uses: 'google-github-actions/auth@v2'
         with:
@@ -71,7 +67,7 @@ jobs:
         run: |-
           docker build -t $GCP_CLOUD_RUN_IMAGE .
           docker push $GCP_CLOUD_RUN_IMAGE
-      - name: 'Deploy to CloudRun'
+      - name: Deploy to CloudRun
         run: |-
           gcloud run deploy $GCP_CLOUD_RUN_SERVICE_NAME \
             --image $GCP_CLOUD_RUN_IMAGE \
