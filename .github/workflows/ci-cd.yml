@@ -49,7 +49,9 @@ jobs:
           name: pomodoro-api
           path: dist
       - name: Create env file from Github secrets
-        run: echo "${{ secrets.ENV_FILE }}" > .env
+        run: |
+          touch .env
+          echo "${{ secrets.ENV_FILE }}" >> .env
       - name: Cat .env
         run: cat .env
       - name: Cat index.cjs
