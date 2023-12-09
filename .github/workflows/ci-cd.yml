@@ -10,6 +10,7 @@ env:
   GCP_CLOUD_RUN_PORT: ${{ secrets.GCP_CLOUD_RUN_PORT }}
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_REGION: ${{ secrets.GCP_REGION }}
+  GCP_ARTIFACT_REGISTRY_URL: asia-northeast1-docker.pkg.dev
   GCP_CLOUD_RUN_IMAGE: asia-northeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_CLOUD_RUN_SERVICE_NAME }}/${{ github.sha }}
 
 jobs:
@@ -53,7 +54,8 @@ jobs:
           path: dist
       - name: Generate .env file from Github Secrets
         run: echo "${{ secrets.APP_ENV_FILE }}" > .env
-
+      - name: Cat files
+        run: cat .env
       - id: Auth
         uses: 'google-github-actions/auth@v2'
         with:
@@ -63,7 +65,7 @@ jobs:
         with:
           version: '>= 416.0.0'
       - name: Authorize Docker push
-        run: gcloud auth configure-docker asia-northeast1-docker.pkg.dev
+        run: gcloud auth configure-docker $GCP_ARTIFACT_REGISTRY_URL
       - name: Build and Push Container
         run: |-
           docker build -t $GCP_CLOUD_RUN_IMAGE .

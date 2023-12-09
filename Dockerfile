@@ -8,8 +8,8 @@ FROM node:18-alpine
 WORKDIR /usr/src/app
 
 # Copy files and folders to build
-COPY prisma/schema.prisma ./prisma/schema.prisma
 COPY dist ./dist
+COPY prisma/schema.prisma ./prisma/schema.prisma
 COPY .env ./
 COPY package.json ./
 COPY yarn.lock ./
