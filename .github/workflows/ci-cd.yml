@@ -52,7 +52,7 @@ jobs:
         with:
           name: pomodoro-api
           path: dist
-       - name: 'Create env file'
+      - name: Create env file from Github secrets
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
       - id: Auth
