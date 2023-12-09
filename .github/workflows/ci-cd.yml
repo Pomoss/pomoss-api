@@ -12,6 +12,7 @@ env:
   GCP_REGION: ${{ secrets.GCP_REGION }}
   GCP_ARTIFACT_REGISTRY_URL: asia-northeast1-docker.pkg.dev
   GCP_CLOUD_RUN_IMAGE: asia-northeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_CLOUD_RUN_SERVICE_NAME }}/${{ github.sha }}
+  ENV_FILE: ${{ secrets.ENV_FILE }}
 
 jobs:
   ci:
@@ -49,9 +50,7 @@ jobs:
           name: pomodoro-api
           path: dist
       - name: Create env file from Github secrets
-        run: |
-          touch .env
-          echo "${{ secrets.ENV_FILE }}" >> .env
+        run: echo "${{ secrets.ENV_FILE }}" > .env
       - name: Cat .env
         run: cat .env
       - name: Cat index.cjs
