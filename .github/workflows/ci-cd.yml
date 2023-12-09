@@ -11,7 +11,7 @@ env:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_REGION: ${{ secrets.GCP_REGION }}
   GCP_ARTIFACT_REGISTRY_URL: asia-northeast1-docker.pkg.dev
-  GCP_CLOUD_RUN_IMAGE: $GCP_ARTIFACT_REGISTRY_URL/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_CLOUD_RUN_SERVICE_NAME }}:${{ github.sha }}
+  GCP_CLOUD_RUN_IMAGE: $GCP_ARTIFACT_REGISTRY_URL/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_CLOUD_RUN_SERVICE_NAME }}/${{ github.sha }}
 
 jobs:
   ci:
