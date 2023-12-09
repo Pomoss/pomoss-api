@@ -7,14 +7,10 @@ FROM node:18-alpine
 # Create and change to the app directory.
 WORKDIR /usr/src/app
 
-# Copy files and folders to build
-COPY dist ./dist
-COPY prisma/schema.prisma ./prisma/schema.prisma
-COPY .env ./
-COPY package.json ./
-COPY yarn.lock ./
+# Copy built files
+COPY . ./
 
-RUN yarn &&\
-    npx prisma generate
+# Install packages and generate prisma client
+RUN yarn && npx prisma generate
 
 CMD [ "yarn", "start" ]

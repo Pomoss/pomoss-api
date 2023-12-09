@@ -8,7 +8,7 @@
   "scripts": {
     "build": "npx prisma generate && node esbuild.mjs",
     "dev": "NODE_ENV=development ts-node-dev --respawn -r tsconfig-paths/register src/devServer.ts",
-    "start": "NODE_ENV=production node ./dist/index.cjs"
+    "start": "NODE_ENV=production node dist/index.cjs"
   },
   "dependencies": {
     "@pothos/core": "^3.38.0",

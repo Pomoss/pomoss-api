@@ -1,0 +1,7 @@
+*
+
+!dist/index.cjs
+!prisma/schema.prisma
+!.env
+!package.json
+!yarn.lock
