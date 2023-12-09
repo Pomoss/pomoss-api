@@ -10,7 +10,8 @@ env:
   GCP_CLOUD_RUN_PORT: ${{ secrets.GCP_CLOUD_RUN_PORT }}
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_REGION: ${{ secrets.GCP_REGION }}
-  GCP_CLOUD_RUN_IMAGE: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_CLOUD_RUN_SERVICE_NAME }}:${{ github.sha }}
+  GCP_ARTIFACT_REGISTRY_URL: asia-northeast1-docker.pkg.dev
+  GCP_CLOUD_RUN_IMAGE: $GCP_ARTIFACT_REGISTRY_URL/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_CLOUD_RUN_SERVICE_NAME }}:${{ github.sha }}
 
 jobs:
   ci:
@@ -63,17 +64,17 @@ jobs:
         with:
           version: '>= 416.0.0'
       - name: Authorize Docker push
-        run: gcloud auth configure-docker
+        run: gcloud auth configure-docker $GCP_ARTIFACT_REGISTRY_URL
       - name: Build and Push Container
         run: |-
-          docker build -t ${{ env.GCP_CLOUD_RUN_IMAGE }} .
-          docker push ${{ env.GCP_CLOUD_RUN_IMAGE }}
+          docker build -t $GCP_CLOUD_RUN_IMAGE.
+          docker push $GCP_CLOUD_RUN_IMAGE
       - name: 'Deploy to CloudRun'
         run: |-
-          gcloud run deploy ${{ env.GCP_CLOUD_RUN_SERVICE_NAME }} \
-            --image ${{ env.GCP_CLOUD_RUN_IMAGE }} \
-            --region ${{ env.GCP_REGION }} \
-            --port ${{ env.GCP_CLOUD_RUN_PORT }} \
+          gcloud run deploy $GCP_CLOUD_RUN_SERVICE_NAME \
+            --image $GCP_CLOUD_RUN_IMAGE \
+            --region $GCP_REGION\
+            --port $GCP_CLOUD_RUN_PORT \
             --platform "managed" \
             --allow-unauthenticated \
             --quiet
