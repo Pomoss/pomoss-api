@@ -1,6 +1,6 @@
 const authConfig = {
     "defaults": {
-        "origin": "http://localhost:4000",
+        "origin": process.env.BACKEND_URL,
         "prefix": "/auth/connect",
         "transport": "session",
     },

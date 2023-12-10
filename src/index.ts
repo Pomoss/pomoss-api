@@ -16,28 +16,28 @@ import { FirestoreStore } from '@google-cloud/connect-firestore';
 
 declare module 'express-session' {
   interface SessionData {
-      user: User,
-      grant: GrantSession
+    user: User,
+    grant: GrantSession
   }
 }
 
 const app = express()
-const yoga = createYoga({schema})
+const yoga = createYoga({ schema })
 
 const authRouter = express.Router()
 
 // authRouter.get('/auth/email',async (req,res, next) => {})
 // authRouter.get('/auth/email/callback',async (req,res, next) => {})
-authRouter.get('/auth/logout',async (req, res) => req.session.destroy(() => res.redirect(process.env.FRONTEND_URL || '')))
+authRouter.get('/auth/logout', async (req, res) => req.session.destroy(() => res.redirect(process.env.FRONTEND_URL as string)))
 
 authRouter.get('/auth/connect/:provider/callback', async (req, res, next) => {
-  if(!req.session.grant) return next()
-  const profile  = req.session.grant.response?.profile
-  if(typeof profile.email === 'string'){
-    switch(req.session.grant.provider){
+  if (!req.session.grant) return next()
+  const profile = req.session.grant.response?.profile
+  if (typeof profile.email === 'string') {
+    switch (req.session.grant.provider) {
       case 'google':
         const user = await prisma.user.upsert({
-          where: {email: profile.email},
+          where: { email: profile.email },
           create: {
             email: profile.email,
             profile_image_url: profile.picture || undefined,
@@ -48,11 +48,11 @@ authRouter.get('/auth/connect/:provider/callback', async (req, res, next) => {
         req.session.user = user
         break;
       default:
-        res.redirect(process.env.FRONTEND_FAILED_LOGIN_URL || '')
+        res.redirect(process.env.FRONTEND_FAILED_LOGIN_URL as string)
         break;
     }
   }
-  res.redirect(process.env.FRONTEND_URL || '')
+  res.redirect(process.env.FRONTEND_URL as string)
 })
 
 app
@@ -73,10 +73,10 @@ app
   .use(
     yoga.graphqlEndpoint,
     (req, res, next) => {
-      if(req.session.user) return next()
+      if (req.session.user) return next()
       return res.status(400).json('Authentication Error')
     },
     yoga
   )
 
-app.listen(process.env.PORT,() => console.log(`Server is started at port: ${process.env.PORT}`))
+app.listen(process.env.PORT, () => console.log(`Server is started at port: ${process.env.PORT}`))
