@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import express from 'express'
 /** Auth */
 import session from 'express-session'
@@ -9,10 +10,9 @@ import { createYoga } from "graphql-yoga";
 import schema from './graphql/schema';
 import prisma from './lib/prisma';
 import { User } from '@prisma/client';
-/** MongoDB */
-// import mongoose from 'mongoose';
-import MongoStore from 'connect-mongo'
-import 'dotenv/config'
+/** Firestore */
+import { Firestore } from '@google-cloud/firestore';
+import { FirestoreStore } from '@google-cloud/connect-firestore';
 
 declare module 'express-session' {
   interface SessionData {
@@ -28,7 +28,7 @@ const authRouter = express.Router()
 
 // authRouter.get('/auth/email',async (req,res, next) => {})
 // authRouter.get('/auth/email/callback',async (req,res, next) => {})
-authRouter.get('/auth/logout',async (req, res) => req.session.destroy(() => res.redirect(process.env.FRONTEND_URL)))
+authRouter.get('/auth/logout',async (req, res) => req.session.destroy(() => res.redirect(process.env.FRONTEND_URL || '')))
 
 authRouter.get('/auth/connect/:provider/callback', async (req, res, next) => {
   if(!req.session.grant) return next()
@@ -48,21 +48,24 @@ authRouter.get('/auth/connect/:provider/callback', async (req, res, next) => {
         req.session.user = user
         break;
       default:
-        res.redirect(process.env.FRONTEND_FAILED_LOGIN_URL)
+        res.redirect(process.env.FRONTEND_FAILED_LOGIN_URL || '')
         break;
     }
   }
-  res.redirect(process.env.FRONTEND_URL)
+  res.redirect(process.env.FRONTEND_URL || '')
 })
 
 app
   // Auth
   .use(cors())
   .use(session({
-    secret: 'grant',
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URL
-    })
+    store: new FirestoreStore({
+      dataset: new Firestore(),
+      kind: 'express-sessions',
+    }),
+    secret: 'my-secret',
+    resave: false,
+    saveUninitialized: true,
   }))
   .use(grant.express(authConfig))
   .use(authRouter)

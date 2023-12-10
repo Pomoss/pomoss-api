@@ -7,17 +7,18 @@
   "license": "MIT",
   "scripts": {
     "build": "npx prisma generate && node esbuild.mjs",
-    "dev": "NODE_ENV=development ts-node-dev --respawn -r tsconfig-paths/register src/devServer.ts",
+    "dev": "NODE_ENV=development ts-node-dev --respawn -r tsconfig-paths/register src/index.ts",
     "start": "NODE_ENV=production node dist/index.cjs"
   },
   "dependencies": {
+    "@google-cloud/connect-firestore": "^3.0.0",
+    "@google-cloud/firestore": "^7.1.0",
     "@pothos/core": "^3.38.0",
     "@pothos/plugin-prisma": "^3.61.0",
     "@pothos/plugin-relay": "^3.44.0",
     "@pothos/plugin-simple-objects": "^3.7.0",
     "@pothos/plugin-with-input": "^3.10.1",
     "@prisma/client": "^5.6.0",
-    "connect-mongo": "^5.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
@@ -28,7 +29,6 @@
     "graphql-scalars": "^1.22.4",
     "graphql-yoga": "^5.0.0",
     "json-bigint-patch": "^0.0.8",
-    "mongoose": "^8.0.1",
     "nodemailer": "^6.9.6"
   },
   "devDependencies": {
