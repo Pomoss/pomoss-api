@@ -1,0 +1,9 @@
+{
+    "AUTHENTICATION": {
+        "NOT_AUTHENTICATED": "Authentication Error: You must login first"
+    },
+    "SERVER": {
+        "INTERNAL": "Internal Server Error",
+        "EXTERNAL": "External Server Error"
+    }
+}
