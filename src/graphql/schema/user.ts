@@ -4,13 +4,13 @@ import { BasicInterface } from "./common";
 
 export const UserType = builder.prismaObject("User", {
   name: 'User',
-  interfaces: [BasicInterface], 
+  interfaces: [BasicInterface],
   fields: (t) => ({
     email: t.expose("email", { type: "Email" }),
     username: t.expose("username", { type: "String", nullable: true }),
     profile_image_url: t.exposeString("profile_image_url", { nullable: true }),
     isSignuped: t.boolean({
-      resolve: (_, __, { req: { session: {user} } }) => typeof user?.username === 'string',
+      resolve: (_, __, { req: { session: { user } } }) => typeof user?.username === 'string',
     }),
   }),
 });
@@ -18,11 +18,8 @@ export const UserType = builder.prismaObject("User", {
 builder.queryFields((t) => ({
   getProfile: t.field({
     type: UserType,
-    resolve: async (_, __, {req}) => {
-      if (!req.session.user) throw new Error('Not user')
-
-      return req.session.user
-    }
+    authScopes: {isAuthenticated: true},
+    resolve: async (_, __, { req: {session: {user}}}) => user
   })
 }))
 

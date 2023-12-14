@@ -1,20 +1,22 @@
-import builder from "./builder";
+import builder from "@/graphql/builder";
 // Import definition
 import "@/graphql/scalars";
-import "@/graphql/defs/common"
-import "@/graphql/defs/user";
+import "@/graphql/schema/common"
+import "@/graphql/schema/user";
 
 /**
  * Build Query and Mutation first
  */
 builder.queryType({
     description: 'The query root type.',
+    authScopes: { isAuthenticated: true },
     fields: t => ({
         helloWorld: t.field({ type: 'String', resolve: () => "Hello World" }),
     }),
 });
 builder.mutationType({
     description: 'The mutation root type.n',
+    authScopes: { isAuthenticated: true },
     fields: t => ({
         helloWorld: t.field({ type: 'String', resolve: () => "Hello World" }),
     }),

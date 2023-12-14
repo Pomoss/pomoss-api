@@ -1,62 +1,23 @@
 import 'dotenv/config'
 import express from 'express'
-/** Auth */
-import session from 'express-session'
-import cors from 'cors'
-import grant, { GrantSession } from 'grant';
-import authConfig from '@/lib/authConfig';
-/** Graphql */
-import { createYoga } from "graphql-yoga";
-import schema from './graphql/schema';
-import prisma from './lib/prisma';
-import { User } from '@prisma/client';
+import type { NextFunction, Request, Response } from 'express'
+import logger from '@/lib/logger'
+import ERROR_CODES from '@/lib/error_codes.json'
+import { yoga } from '@/graphql'
 /** Firestore */
 import { Firestore } from '@google-cloud/firestore';
 import { FirestoreStore } from '@google-cloud/connect-firestore';
-
-declare module 'express-session' {
-  interface SessionData {
-    user: User,
-    grant: GrantSession
-  }
-}
+/** Auth */
+import session from 'express-session'
+import cors from 'cors'
+import grant from 'grant';
+import authConfig from '@/lib/authConfig';
+import authRouter from '@/routes/auth'
 
 const app = express()
-const yoga = createYoga({ schema })
 
-const authRouter = express.Router()
-
-// authRouter.get('/auth/email',async (req,res, next) => {})
-// authRouter.get('/auth/email/callback',async (req,res, next) => {})
-authRouter.get('/auth/logout', async (req, res) => req.session.destroy(() => res.redirect(process.env.FRONTEND_URL as string)))
-
-authRouter.get('/auth/connect/:provider/callback', async (req, res, next) => {
-  if (!req.session.grant) return next()
-  const profile = req.session.grant.response?.profile
-  if (typeof profile.email === 'string') {
-    switch (req.session.grant.provider) {
-      case 'google':
-        const user = await prisma.user.upsert({
-          where: { email: profile.email },
-          create: {
-            email: profile.email,
-            profile_image_url: profile.picture || undefined,
-            username: `${profile.given_name} ${profile.family_name}`
-          },
-          update: {}
-        })
-        req.session.user = user
-        break;
-      default:
-        res.redirect(process.env.FRONTEND_FAILED_LOGIN_URL as string)
-        break;
-    }
-  }
-  res.redirect(process.env.FRONTEND_URL as string)
-})
-
+// Authrization
 app
-  // Auth
   .use(cors())
   .use(session({
     store: new FirestoreStore({
@@ -69,14 +30,18 @@ app
   }))
   .use(grant.express(authConfig))
   .use(authRouter)
-  // Graphql
-  .use(
-    yoga.graphqlEndpoint,
-    (req, res, next) => {
-      if (req.session.user) return next()
-      return res.status(400).json('Authentication Error')
-    },
-    yoga
-  )
 
-app.listen(process.env.PORT, () => console.log(`Server is started at port: ${process.env.PORT}`))
+app.use(yoga.graphqlEndpoint, yoga)
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  // Authrization errors
+  if (Object.values(ERROR_CODES.AUTHENTICATION).includes(err.message)) {
+    res.status(400).send(err)
+  }
+
+  // System errors
+  logger.error(err)
+  res.status(500).send({ errors: [{ message: ERROR_CODES.SERVER.INTERNAL }] });
+})
+
+app.listen(process.env.PORT, () => logger.info(`Server is started at port: ${process.env.PORT}`))
