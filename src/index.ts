@@ -31,6 +31,7 @@ app
     }),
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // 1 day
+      domain: process.env.SERVICE_DOMAIN,
     },
     secret: 'my-secret',
     resave: false,

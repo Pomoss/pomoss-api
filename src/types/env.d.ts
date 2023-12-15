@@ -11,7 +11,7 @@ declare module 'process' {
                 readonly GCP_OAUTH_CLIENT_ID: string;
                 readonly GCP_OAUTH_CLIENT_SECRET: string;
 
-                // Backend
+                readonly SERVICE_DOMAIN: string;
                 readonly BACKEND_URL: string;
                 // Frontend
                 readonly FRONTEND_URL: string;
