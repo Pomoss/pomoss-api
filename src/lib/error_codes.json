@@ -1,6 +1,6 @@
 {
     "AUTHENTICATION": {
-        "NOT_AUTHENTICATED": "Authentication Error: You must login first"
+        "UNAUTHORIZED": "Unauthorized"
     },
     "SERVER": {
         "INTERNAL": "Internal Server Error",

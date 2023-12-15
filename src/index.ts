@@ -15,15 +15,23 @@ import authConfig from '@/lib/authConfig';
 import authRouter from '@/routes/auth'
 
 const app = express()
-
 // Authrization
 app
-  .use(cors())
+  .use(cors({
+    origin: [
+      process.env.FRONTEND_URL as string,
+      process.env.BACKEND_URL as string
+    ],
+    credentials: true
+  }))
   .use(session({
     store: new FirestoreStore({
       dataset: new Firestore(),
       kind: 'express-sessions',
     }),
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    },
     secret: 'my-secret',
     resave: false,
     saveUninitialized: true,
@@ -33,7 +41,7 @@ app
 
 app.use(yoga.graphqlEndpoint, yoga)
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+const errorHandler = (err: Error, req: Request, res: Response, _: NextFunction) => {
   // Authrization errors
   if (Object.values(ERROR_CODES.AUTHENTICATION).includes(err.message)) {
     res.status(400).send(err)
@@ -42,6 +50,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   // System errors
   logger.error(err)
   res.status(500).send({ errors: [{ message: ERROR_CODES.SERVER.INTERNAL }] });
-})
+}
+app.use(errorHandler)
 
 app.listen(process.env.PORT, () => logger.info(`Server is started at port: ${process.env.PORT}`))

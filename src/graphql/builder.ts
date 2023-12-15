@@ -61,9 +61,8 @@ const builder = new SchemaBuilder<Builder>({
   }),
   scopeAuthOptions: {
     authorizeOnSubscribe: true,
-    unauthorizedError:() => {
-      return new Error(ERROR_CODES.AUTHENTICATION.NOT_AUTHENTICATED)
-    }
+    // treatErrorsAsUnauthorized: true,
+    unauthorizedError: () => new Error(ERROR_CODES.AUTHENTICATION.UNAUTHORIZED),
   },
   prisma: {
     client: () => prisma,
