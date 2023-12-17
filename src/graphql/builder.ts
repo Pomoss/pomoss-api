@@ -6,6 +6,7 @@ import ScopeAuthPlugin from '@pothos/plugin-scope-auth';
 import PrismaPlugin from "@pothos/plugin-prisma";
 import RelayPlugin from "@pothos/plugin-relay";
 import WithInputPlugin from "@pothos/plugin-with-input";
+import ErrorsPlugin from '@pothos/plugin-errors';
 
 /** Types */
 import type PrismaTypes from '@pothos/plugin-prisma/generated';
@@ -55,13 +56,13 @@ const builder = new SchemaBuilder<Builder>({
     PrismaPlugin,
     RelayPlugin,
     WithInputPlugin,
+    ErrorsPlugin
   ],
   authScopes: async ({ req }) => ({
     isAuthenticated: req.session.user !== undefined
   }),
   scopeAuthOptions: {
     authorizeOnSubscribe: true,
-    // treatErrorsAsUnauthorized: true,
     unauthorizedError: () => new Error(ERROR_CODES.AUTHENTICATION.UNAUTHORIZED),
   },
   prisma: {
