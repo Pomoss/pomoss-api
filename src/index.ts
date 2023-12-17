@@ -5,7 +5,7 @@ import logger from '@/lib/logger'
 import ERROR_CODES from '@/lib/error_codes.json'
 import { yoga } from '@/graphql'
 /** Firestore */
-import { Firestore } from '@google-cloud/firestore';
+import {firestore} from '@/lib/firestore'
 import { FirestoreStore } from '@google-cloud/connect-firestore';
 /** Auth */
 import session from 'express-session'
@@ -15,6 +15,10 @@ import authConfig from '@/lib/authConfig';
 import authRouter from '@/routes/auth'
 
 const app = express()
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
+
 // Authrization
 app
   .use(cors({
@@ -26,7 +30,7 @@ app
   }))
   .use(session({
     store: new FirestoreStore({
-      dataset: new Firestore(),
+      dataset: firestore,
       kind: 'express-sessions',
     }),
     cookie: {
