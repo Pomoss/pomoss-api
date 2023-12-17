@@ -1,6 +1,6 @@
 // import prisma from "@/lib/prisma";
-import builder from "../builder";
-import { BasicInterface } from "./common";
+import builder from "../../builder";
+import { BasicInterface } from "../common";
 
 export const UserType = builder.prismaObject("User", {
   name: 'User',
