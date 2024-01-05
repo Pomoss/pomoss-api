@@ -1,6 +1,6 @@
 import { hotp } from 'otplib';
 import { createHmac, createSecretKey } from 'crypto'
-import hotpCounters from '@/lib/firestore/models/HotpCounters';
+import prisma from '@/lib/prisma';
 
 hotp.options = { digits: 6 };
 
@@ -18,16 +18,8 @@ export const generate = async (email: string) => {
         'sha256',
         createSecretKey(Buffer.from(HOTP_SECRET, 'utf-8'))
     ).update(email).digest('hex')
-
-    const
-        counterSnap = await hotpCounters.doc(email).get(),
-        counter = counterSnap.data()?.counter
-
-    if (!(counterSnap.exists && counter)) {
-        await hotpCounters.doc(email).set({ counter: 0 })
-        return hotp.generate(secret, 0)
-    }
-    return hotp.generate(secret, counter)
+    const user = await prisma.user.findUniqueOrThrow({where: {email}})
+    return hotp.generate(secret, user.hotp_counter)
 }
 export interface VerifyArgs {
     token: string; // 6 digit
@@ -47,14 +39,12 @@ export const verify = async ({ token, email }: VerifyArgs) => {
             'sha256',
             createSecretKey(Buffer.from(HOTP_SECRET, 'utf-8'))
         ).update(email).digest('hex')
-        const
-            counterSnap = await hotpCounters.doc(email).get(),
-            counter = counterSnap.data()?.counter
+        const user = await prisma.user.findUnique({where: {email}})
         if (
-            (counter !== undefined) &&
-            hotp.verify({ token, secret: secret, counter })
+            (user !== null) &&
+            hotp.verify({ token, secret: secret, counter: user.hotp_counter })
         ) {
-            await hotpCounters.doc(email).update({ counter: counter + 1 })
+            await prisma.user.update({where: {id: user.id}, data: {hotp_counter: user.hotp_counter + 1}})
             return true
         }
         throw new Error()

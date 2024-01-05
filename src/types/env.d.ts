@@ -3,8 +3,10 @@ declare module 'process' {
         namespace NodeJS {
             interface ProcessEnv {
                 readonly NODE_ENV: 'development' | 'production'
-                // For MySQL
+
+                // For databases
                 readonly MYSQL_URL: string
+                readonly REDIS_URL: string
 
                 // For Googl OAuth2.0
                 readonly GCP_OOGLE_PROJECT_ID: string;

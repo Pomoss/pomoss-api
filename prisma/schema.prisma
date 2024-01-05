@@ -1,7 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-
 datasource db {
   provider     = "mysql"
   url          = env("MYSQL_URL")
@@ -16,17 +15,66 @@ generator pothos {
   provider = "prisma-pothos-types"
 }
 
-
 model User {
   id         Int      @id() @default(autoincrement())
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   deleted    Boolean  @default(false)
 
-  email             String    @unique
+  email             String  @unique
   // Profile
   username          String?
   profile_image_url String?
 
+  // Authentication
+  hotp_counter Int @default(0)
+
+  groups GroupMember[]
+  pomodoroes Pomodoro[]
+
   @@map("users")
+}
+
+model Group {
+  id         Int      @id() @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted    Boolean  @default(false)
+
+  name String
+
+  members GroupMember[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  id         Int      @id() @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted    Boolean  @default(false)
+
+  group_id  Int
+  group     Group @relation(fields: [group_id], references: [id])
+  member_id Int
+  member    User  @relation(fields: [member_id], references: [id])
+
+  type String
+
+  @@index([group_id])
+  @@index([member_id])
+  @@map("group_members")
+}
+
+model Pomodoro {
+  id         Int      @id() @default(autoincrement())
+  created_at DateTime @default(now())
+
+  work Int
+  break Int
+
+  user_id  Int
+  user User @relation(fields: [user_id], references: [id])
+  @@index([user_id])
+  @@map("pomodoroes")
 }
