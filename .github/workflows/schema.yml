@@ -1,0 +1,24 @@
+name: Generate schema.graphql
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18.6.0"
+      - name: Install NPM dependencies
+        run: yarn
+      - name: Generate
+        run: yarn generate:schema
+      - uses: actions/upload-artifact@master
+        with:
+          name: pomodoro-api
+          path: schema.graphql
