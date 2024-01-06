@@ -3,9 +3,10 @@ import builder from "@/graphql/builder";
 import "@/graphql/scalars";
 import "@/graphql/schema/common"
 import "@/graphql/schema/models/users";
+import "@/graphql/schema/models/pomodoroTimer"
 
 /**
- * Build Query and Mutation first
+ * Build Query, Mutation and Subscription type first to avoid error
  */
 builder.queryType({
     description: 'The query root type.',
@@ -15,12 +16,14 @@ builder.queryType({
     }),
 });
 builder.mutationType({
-    description: 'The mutation root type.n',
-    // authScopes: { isAuthenticated: true },
+    description: 'The mutation root type.',
+    authScopes: { isAuthenticated: true },
     fields: t => ({
         helloWorld: t.field({ type: 'String', resolve: () => "Hello World" }),
     }),
 });
+builder.subscriptionType({
+})
 
 builder.objectType(Error, {
     name: 'Error',

@@ -1,7 +1,6 @@
 import { createClient } from "redis";
 import logger from "@/lib/logger";
 import { RedisPubSub } from "graphql-redis-subscriptions";
-import { minutesToMilliseconds } from "./converter";
 
 export const redisClient = createClient({
     url: process.env.REDIS_URL
@@ -15,62 +14,36 @@ redisClient.on("error", logger.error);
 /**
  * Below interfaces are types of model for redis
  */
-export interface TimerContext {
-    context: {
-        pomodoroCount: number
-        mode: 'work' | 'shortBreak' | 'longBreak'
-        goal: Date | null
-        paused: Date | null
-    }
-    settings: {
-        work: number,
-        shortBreak: number,
-        longBreak: number
-    }
+export interface PomodoroTimerContext {
+    count: number
+    mode: 'work' | 'shortBreak' | 'longBreak'
+    goal: Date | null
+    paused: Date | null
 }
-export interface TimerContextIdParams {
+export interface PomodoroTimerContextIdParams {
     id: string,
     type: 'group' | 'user'
 }
 
 // Set as running
-export const initialTimerCotext: TimerContext = {
-    settings: {
-        work: 25,
-        shortBreak: 5,
-        longBreak: 20
-    },
-    context: {
-        pomodoroCount: 0,
-        mode: 'work',
-        // goal: new Date(new Date().getTime() + minutesToMilliseconds(25)), // 25 min later
-        goal: new Date(new Date().getTime() + 4 * 1000), // 4 secs later
-        paused: null
-    }
-}
 export const orm = {
-    timerContext: {
-        id: (idParams: TimerContextIdParams) =>
-            `TimerContext:${idParams.type}:${idParams.id}`,
-        set: async (idParams: TimerContextIdParams, data: TimerContext) =>
-            await redisClient.setEx(orm.timerContext.id(idParams), 1000, JSON.stringify(data)),
-        get: async (idParams: TimerContextIdParams) => {
-            const json = await redisClient.get(orm.timerContext.id(idParams))
-            if(json === null) return null
-            const parsed = JSON.parse(json) as Omit<TimerContext, 'context'> & {
-                context: Omit<TimerContext['context'], 'goal' | 'paused'> & {
-                    goal: string | null
-                    paused: string | null
-                }
+    PomodoroTimerContext: {
+        id: (idParams: PomodoroTimerContextIdParams) =>
+            `PomodoroTimerContext:${idParams.type}:${idParams.id}`,
+        set: async (idParams: PomodoroTimerContextIdParams, data: PomodoroTimerContext) =>
+            await redisClient.setEx(orm.PomodoroTimerContext.id(idParams), 1000, JSON.stringify(data)),
+        get: async (idParams: PomodoroTimerContextIdParams) => {
+            const json = await redisClient.get(orm.PomodoroTimerContext.id(idParams))
+            if (json === null) return null
+            const parsed = JSON.parse(json) as Omit<PomodoroTimerContext, 'goal' | 'paused'> & {
+                goal: string | null
+                paused: string | null
             }
 
-            const data: TimerContext = {
+            const data: PomodoroTimerContext = {
                 ...parsed,
-                context: {
-                    ...parsed.context,
-                    goal: parsed.context.goal? new Date(parsed.context.goal): null,
-                    paused: parsed.context.paused? new Date(parsed.context.paused): null,
-                }
+                goal: parsed.goal ? new Date(parsed.goal) : null,
+                paused: parsed.paused ? new Date(parsed.paused) : null,
             }
             return data
         },

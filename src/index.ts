@@ -4,11 +4,10 @@ import type { NextFunction, Request, Response } from 'express'
 import logger from '@/lib/logger'
 import ERROR_CODES from '@/lib/error_codes.json'
 import { yoga } from '@/graphql'
-/** Firestore */
-import {firestore} from '@/lib/firestore'
-import { FirestoreStore } from '@google-cloud/connect-firestore';
 /** Auth */
 import session from 'express-session'
+import RedisStore from "connect-redis"
+import { redisClient } from '@/lib/redis'
 import cors from 'cors'
 import grant from 'grant';
 import authConfig from '@/lib/authConfig';
@@ -29,9 +28,9 @@ app
     credentials: true
   }))
   .use(session({
-    store: new FirestoreStore({
-      dataset: firestore,
-      kind: 'express-sessions',
+    store: new RedisStore({
+      prefix: 'session',
+      client: redisClient,
     }),
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // 1 day
@@ -46,7 +45,7 @@ app
 
 app.use(yoga.graphqlEndpoint, yoga)
 
-const errorHandler = (err: Error, req: Request, res: Response, _: NextFunction) => {
+const errorHandler = (err: Error, _: Request, res: Response, __: NextFunction) => {
   // Authrization errors
   if (Object.values(ERROR_CODES.AUTHENTICATION).includes(err.message)) {
     res.status(400).send(err)

@@ -15,6 +15,11 @@ generator pothos {
   provider = "prisma-pothos-types"
 }
 
+enum Entity {
+  user
+  group
+}
+
 model User {
   id         Int      @id() @default(autoincrement())
   created_at DateTime @default(now())
@@ -66,6 +71,20 @@ model GroupMember {
   @@map("group_members")
 }
 
+model PomodoroTimerSettings{
+  id         Int      @id() @default(autoincrement())
+
+  work_minutes Int
+  short_break_minutes Int
+  long_break_minutes Int
+  auto_start_break Boolean
+
+  entity_id Int
+  entity_type Entity
+
+  @@unique([entity_id, entity_type])
+  @@map("pomodoro_timer_settings")
+}
 model Pomodoro {
   id         Int      @id() @default(autoincrement())
   created_at DateTime @default(now())

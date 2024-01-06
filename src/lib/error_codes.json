@@ -5,5 +5,9 @@
     "SERVER": {
         "INTERNAL": "Internal Server Error",
         "EXTERNAL": "External Server Error"
+    },
+    "TIMER": {
+        "CALL_PLAY_FIRST": "You need to call play first.",
+        "IS_NOT_DONE": "Timer is not done"
     }
 }
