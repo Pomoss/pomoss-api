@@ -7,6 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "npx prisma generate && node esbuild.mjs",
+    "generate:prisma": "npx prisma generate",
     "generate:schema": "ts-node-dev -r tsconfig-paths/register src/lib/schemaGenerater.ts",
     "dev": "NODE_ENV=development ts-node-dev --respawn -r tsconfig-paths/register src/index.ts",
     "preview": "NODE_ENV=development node dist/index.cjs",

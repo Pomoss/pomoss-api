@@ -17,7 +17,9 @@ jobs:
       - name: Install NPM dependencies
         run: yarn
       - name: Generate
-        run: yarn generate:schema
+        run: |
+          yarn generate:prisma
+          yarn generate:schema
       - uses: actions/upload-artifact@master
         with:
           name: pomodoro-api
